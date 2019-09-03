@@ -14,13 +14,13 @@ import torch
 import torch.nn as nn
 os.environ["CUDA_VISIBLE_DEVICES"] = "4"
 
-def eval(nums, path):
+def eval(nums, weight_path):
     correct = 0
     dataset = Dataset.verDataset(phase="test")
     net = Net.DenseNet()
     net = nn.DataParallel(net)
     net = net.cuda()
-    weighted = torch.load(path)
+    weighted = torch.load(weight_path)
     # print(weighted)
     net.load_state_dict(weighted)
     print("loading weight!")
@@ -46,6 +46,6 @@ def decode(precision):
 
 if __name__ == "__main__":
     nums = 5000
-    path = r"weights/densenet121_10000.pth"
-    correct = eval(nums, path)
+    weight_path = r"weights/densenet121_10000.pth"
+    correct = eval(nums, weight_path)
     print("correct: %d, precision: %.2f%%"%(correct,correct/nums*100))
