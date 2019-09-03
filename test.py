@@ -16,17 +16,17 @@ import torch.nn as nn
 import torchvision.transforms as transforms
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
-def test(path = r"/home/zhongyuan/datasets/VerifiCodeRef/images/test/1258.jpg"):
+def test(image_path = r"/home/zhongyuan/datasets/VerifiCodeRef/images/test/1258.jpg",weight_path = "weights/densenet121_10000_7180.pth"):
     net = Net.DenseNet()
     net = nn.DataParallel(net)
     net = net.cuda()
-    weighted = torch.load(r"/home/zhongyuan/Workspace/verfication_code_rec/weights/densenet121_10000_7180.pth")
+    weighted = torch.load(weight_path)
     # print(weighted)
     net.load_state_dict(weighted)
     print("load weight completed!")
     net.eval()
 
-    image = cv2.imread(path)
+    image = cv2.imread(image_path)
     image = cv2.resize(image, (32, 32))
     max = image.max()
     min = image.min()
