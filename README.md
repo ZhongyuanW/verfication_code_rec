@@ -1,2 +1,2 @@
 # verfication_code_rec
-verfication code recognize with pytorch0.4
+verfication code recognization with pytorch 0.4
