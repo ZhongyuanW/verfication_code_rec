@@ -6,7 +6,7 @@
 # @Software: PyCharm
 
 HOME = "/home/zhongyuan/datasets/VerifiCodeRef"
-LR_STEP = (6000, 8000, 12000)
+LR_STEP = (6000, 10000, 14000)
 CLASS = [
             ' ',
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
