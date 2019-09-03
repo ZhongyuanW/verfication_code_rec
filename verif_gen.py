@@ -10,9 +10,9 @@ from captcha.image import ImageCaptcha
 from random import randint
 from config import *
 
-def verfiCodeGen(length=4, images=50000, type="train"):
+def verfiCodeGen(length=4, nums=50000, type="train"):
     labels = ""
-    for m in range(0,images):
+    for m in range(0,nums):
         chars = ''
         for i in range(length):
             chars += CLASS[randint(0, CLASS_NUM)]
@@ -27,4 +27,4 @@ def verfiCodeGen(length=4, images=50000, type="train"):
 if __name__ == "__main__":
     os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
-    verfiCodeGen(images=50000,type="train")
+    verfiCodeGen(nums=50000,type="train")
