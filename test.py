@@ -16,7 +16,7 @@ import torch.nn as nn
 import torchvision.transforms as transforms
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
-def test(image_path = r"/home/zhongyuan/datasets/VerifiCodeRef/images/test/1258.jpg",weight_path = "weights/densenet121_10000_7180.pth"):
+def test(image_path = r"/home/zhongyuan/datasets/VerifiCodeRef/images/test/1258.jpg",weight_path = r"weights/densenet121_10000_7180.pth"):
     net = Net.DenseNet()
     net = nn.DataParallel(net)
     net = net.cuda()
