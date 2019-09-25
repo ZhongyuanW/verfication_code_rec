@@ -97,7 +97,8 @@ def train():
 
         # print(target_1,torch.argmax(y1,dim=1).squeeze())
 
-        precision = torch.eq(torch.eq(torch.eq(precision_1,precision_2),precision_3),precision_4).float().sum()/BATCH_SIZE
+        # precision = torch.eq(torch.eq(torch.eq(precision_1,precision_2),precision_3),precision_4).float().sum()/BATCH_SIZE
+        precision = ((precision_1 + precision_2 + precision_3 + precision_4) > 3.5).float().sum() / BATCH_SIZE
 
 
         if i %10 == 0:
