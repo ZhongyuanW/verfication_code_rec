@@ -16,8 +16,9 @@ import visdom
 from torch.autograd import Variable
 from config import *
 import eval as eval
+import math
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "5,6"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 
 viz = visdom.Visdom()
 
@@ -46,9 +47,11 @@ def train():
     vis_title = dataset.name
     vis_legend = ["loss"]
     iter_plot = create_vis_plot('Iteration', 'Loss', vis_title, vis_legend)
+    prec_plot = create_vis_plot('Iteration', 'Precision', vis_title, ["prec"])
 
     step_index = 0
     t0 = time.time()
+    history_prec = -1.0
 
     for i in range(MAX_SIZE):
 
@@ -94,12 +97,9 @@ def train():
         precision_4 = torch.eq(torch.argmax(y4, dim=1).squeeze(), target_4)
 
         # print(precision_1,precision_2,precision_3,precision_4)
-
         # print(target_1,torch.argmax(y1,dim=1).squeeze())
 
-        # precision = torch.eq(torch.eq(torch.eq(precision_1,precision_2),precision_3),precision_4).float().sum()/BATCH_SIZE
-        precision = ((precision_1 + precision_2 + precision_3 + precision_4) > 3.5).float().sum() / BATCH_SIZE
-
+        precision = ((precision_1+precision_2+precision_3+precision_4)>3.5).float().sum()/BATCH_SIZE
 
         if i %10 == 0:
             print("[%d/%d] timer %.4f, loss %.4f, prec %.2f%%"%(i,MAX_SIZE,time.time()-t0,loss.item(),precision.item()*100))
@@ -108,14 +108,18 @@ def train():
         update_vis_plot(i, loss.item(),iter_plot, 'append')
 
         if i != 0 and i % 1000 == 0:
-            print("save state, iter: %d"%i,end=", ")
-
-            torch.save(net.state_dict(),"weights/densenet121_%d.pth"%(i))
-
-            eval.eval(1000,"weights/densenet121_%d.pth"%(i))
-
-
-    torch.save(net.state_dict(), "weights/densenet121_final.pth")
+            current_prec = eval.eval(1000,net=net,phase="train")
+            update_vis_plot(i,current_prec,prec_plot,"append")
+            if (current_prec>=history_prec):
+                history_prec=current_prec
+                print("save state, iter: %d, prec: %.2f%%"%(i,current_prec*100))
+                torch.save(net.state_dict(),"weights/densenet121_%d_%d.pth"%(i,int(history_prec*10000)))
+    current_prec = eval.eval(1000,net=net,phase="train")
+    update_vis_plot(i, current_prec, prec_plot, "append")
+    if (current_prec >= history_prec):
+        history_prec = current_prec
+        print("save state, iter: %d" % i, end=", ")
+        torch.save(net.state_dict(), "weights/densenet121_final_%d.pth"%(int(history_prec*10000)))
 
 
 def create_vis_plot(_xlabel, _ylabel, _title, _legend):
