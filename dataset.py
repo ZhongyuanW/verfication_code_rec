@@ -31,12 +31,12 @@ class verDataset(Dataset.Dataset):
             path = os.path.join(image_path, phase,i)
             image = cv2.imread(path)
 
-            image = cv2.resize(image,(32,32))
+            #image = cv2.resize(image,(32,32))
 
-            max = image.max()
-            min = image.min()
+            #max = image.max()
+            #min = image.min()
 
-            image = (image-min)/(max-min)
+            #image = (image-min)/(max-min)
             # print(image)
 
             images_target.append(image)
@@ -48,17 +48,13 @@ class verDataset(Dataset.Dataset):
         self.data = images_target
         self.label = labels_target
 
-        # np_images = np.array(images_target)
-        # self.mean = (np_images[:,:,:,2].mean(),np_images[:,:,:,1].mean(),np_images[:,:,:,0].mean())
-        # self.std = (np_images[:,:,:,2].std(),np_images[:,:,:,1].std(),np_images[:,:,:,0].std())
-
         self.transforms = transforms.Compose([
             #transforms.ToPILImage(),
             #transforms.RandomHorizontalFlip(),
             #transforms.ColorJitter(10.0, 10.0, 2.0, 0.2),
             #transforms.Resize((32,32)),
             #transforms.ToTensor(),
-            transforms.Normalize(mean=(0.5,0.5,0.5), std=(0.5,0.5,0.5)),
+            #transforms.Normalize(mean=(0.5,0.5,0.5), std=(0.5,0.5,0.5)),
         ])
 
         # print("loading data!")
@@ -74,7 +70,7 @@ class verDataset(Dataset.Dataset):
         data = torch.from_numpy(data).float()
         #data = pre.preprocess(data)
 
-        data = self.transforms(data)
+        #data = self.transforms(data)
 
         label = self.label[item].replace("\n","").strip()
 
@@ -92,6 +88,7 @@ class verDataset(Dataset.Dataset):
 
 
 if __name__ == "__main__":
+    os.environ["CUDA_VISIBLE_DEVICES"] = "6"
 
     import torch.utils.data.dataloader as Dataloader
 
@@ -109,8 +106,5 @@ if __name__ == "__main__":
         except StopIteration:
             batch_iterator = iter(dataloader)
             images, targets = next(batch_iterator)
-        # images = images.cuda()
-        # print(targets[0])
-
-
+        print(targets[0])
 
