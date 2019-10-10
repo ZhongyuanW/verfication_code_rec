@@ -126,7 +126,6 @@ class DenseNet(nn.Module):
 
 
 if __name__ == "__main__":
-
     import os
     os.environ["CUDA_VISIBLE_DEVICES"] = "6"
 
@@ -137,5 +136,4 @@ if __name__ == "__main__":
     x = torch.zeros((64,3,160,60),dtype = torch.float32)
     x=x.cuda()
     y = net(x)
-
     print(y.size())
