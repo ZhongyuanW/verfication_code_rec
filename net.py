@@ -55,7 +55,7 @@ class DenseNet(nn.Module):
             nDenseBlocks //= 2
 
         nChannels = 2*growthRate
-        self.conv1 = nn.Conv2d(3, nChannels, kernel_size=3, padding=1,
+        self.conv1 = nn.Conv2d(3, nChannels, kernel_size=7, padding=1, stride=2,
                                bias=False)
         self.dense1 = self._make_dense(nChannels, growthRate, nDenseBlocks, bottleneck)
         nChannels += nDenseBlocks*growthRate
@@ -73,20 +73,21 @@ class DenseNet(nn.Module):
         nChannels += nDenseBlocks*growthRate
 
         self.bn1 = nn.BatchNorm2d(nChannels)
+        #self.conv_last = nn.Conv2d(nChannels,nClasses,1)
+        #self.bn2 = nn.BatchNorm2d(nClasses)
+        self.avgpool = nn.AdaptiveAvgPool2d((1,1))
+        #self.softmax=nn.LogSoftmax(dim=1)
         self.fc = nn.Linear(nChannels, nClasses)
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
-                # n = m.kernel_size[0] * m.kernel_size[1] * m.out_channels
-                nn.init.kaiming_uniform_(m.weight,mode="fan_out",nonlinearity="relu")
-                # m.weight.data.normal_(0, math.sqrt(2. / n))
+                nn.init.normal_(m.weight, std=0.01)
+                if m.bias is not None:
+                    nn.init.constant_(m.bias, 0)
             elif isinstance(m, nn.BatchNorm2d):
-                # nn.init.kaiming_uniform_(m.weight.data,mode="fan_in",nonlinearity="relu")
-                # nn.init.kaiming_uniform_(m.bias.data,mode="fan_in",nonlinearity="relu")
-                m.weight.data.fill_(1)
-                m.bias.data.zero_()
+                nn.init.constant_(m.weight, 1)
+                nn.init.constant_(m.bias, 0)
             elif isinstance(m, nn.Linear):
-                # nn.init.kaiming_uniform_(m.bias.data,mode="fan_in",nonlinearity="relu")
                 m.weight.data.normal_(0,0.01)
                 m.bias.data.zero_()
 
@@ -105,23 +106,35 @@ class DenseNet(nn.Module):
         out = self.trans1(self.dense1(out))
         out = self.trans2(self.dense2(out))
         out = self.dense3(out)
-        out = torch.squeeze(F.avg_pool2d(F.relu(self.bn1(out)), 8))
+        # out = torch.squeeze(F.avg_pool2d(F.relu(self.bn1(out)), 8))
 
+        out = F.relu(self.bn1(out),inplace=True)
+
+        #out=F.relu(self.bn2(self.conv_last(out)),inplace=True)
+        out=self.avgpool(out)
+        out = torch.squeeze(out,dim=2).squeeze(dim=2)
         out = self.fc(out)
-        # out = F.log_softmax(out,dim=0)
+
+        #out = self.fc(out)
+        # out_1, out_2, out_3, out_4 = out[:,:CLASS_NUM+1],out[:,CLASS_NUM+1:(CLASS_NUM+1)*2],out[:,(CLASS_NUM+1)*2:(CLASS_NUM+1)*3],out[:,(CLASS_NUM+1)*3:]
+        #
+        # out_1,out_2,out_3,out_4 = F.log_softmax(out_1,dim=1),F.log_softmax(out_2,dim=1),F.log_softmax(out_3,dim=1),F.log_softmax(out_4,dim=1)
+        #
+        # out = torch.cat((out_1,out_2,out_3,out_4),dim=1)
+
         return out
 
 
 if __name__ == "__main__":
 
     import os
-    os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
+    os.environ["CUDA_VISIBLE_DEVICES"] = "6"
 
     net = DenseNet()
     net = net.cuda()
     net.eval()
 
-    x = torch.zeros((1,3,32,32),dtype = torch.float32)
+    x = torch.zeros((64,3,160,60),dtype = torch.float32)
     x=x.cuda()
     y = net(x)
 
