@@ -16,35 +16,35 @@ import torch.nn as nn
 import torchvision.transforms as transforms
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
-def test(image_path=r"/home/zhongyuan/datasets/VerifiCodeRef/images/test/1333.jpg",weight_path="weights/densenet121_16000_7190.pth"):
+def test(image_path=os.path.join(HOME,"images/test/0.jpg"),weight_path="weights/densenet121_5000_8290.pth"):
     net = Net.DenseNet()
     net = nn.DataParallel(net)
     net = net.cuda()
     weighted = torch.load(weight_path)
-    # print(weighted)
+    #print(weighted)
     net.load_state_dict(weighted)
     print("load weight completed!")
     net.eval()
 
     image = cv2.imread(image_path)
-    image = cv2.resize(image, (32, 32))
-    max = image.max()
-    min = image.min()
-    image = (image - min) / (max - min)
+    #image = cv2.resize(image, (32, 32))
+    #max = image.max()
+    #min = image.min()
+    #image = (image - min) / (max - min)
 
     image = np.transpose(image,(2,0,1))
 
     image = torch.from_numpy(image).float()
-    transform = transforms.Normalize(mean=(0.5,0.5,0.5), std=(0.5,0.5,0.5))
-    image = transform(image)
+    #transform = transforms.Normalize(mean=(0.5,0.5,0.5), std=(0.5,0.5,0.5))
+    #image = transform(image)
 
     image = Variable(image.unsqueeze(0)).cuda()
 
-    precision = net(image).cpu().data
+    precision = net(image).squeeze(0).cpu().data
 
     code = decode(precision)
 
-    print(code)
+    return code
 
 
 def decode(precision):
@@ -55,4 +55,5 @@ def decode(precision):
 
 
 if __name__ == "__main__":
-    test()
+    res = test()
+    print(res)
