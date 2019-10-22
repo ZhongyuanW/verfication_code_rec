@@ -39,7 +39,8 @@ def train():
     net = nn.DataParallel(net)
     net = net.cuda()
 
-    optimizer = optim.SGD(net.parameters(), lr=LR, momentum=MOMENTUM)
+    # optimizer = optim.SGD(net.parameters(), lr=LR, momentum=MOMENTUM)
+    optimizer = optim.Adam(net.parameters(), lr=LR)
     criterion = nn.CrossEntropyLoss()
 
     net.train()
