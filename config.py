@@ -6,7 +6,7 @@
 # @Software: PyCharm
 
 HOME = "/home/zhongyuan/datasets/VerifiCodeRef"
-LR_STEP = (15000,30000)
+LR_STEP = (20000,30000)
 CLASS = [
             ' ',
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
@@ -20,7 +20,7 @@ CLASS = [
 
 
 CLASS_NUM = 62
-
+SAVE_PATH = "Adam3e-4_no_norm"
 BATCH_SIZE = 128
 MAX_SIZE = 40000
 LR = 3e-4
