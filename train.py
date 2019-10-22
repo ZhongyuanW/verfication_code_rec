@@ -27,6 +27,9 @@ def train():
     dataset = Dataset.verDataset(phase="train")
 
     print("dataset size is: %d"%dataset.__len__())
+    
+    if not os .path.exists("weights/%s"%SAVE_PATH):
+        os.mkdir("weights/%s"%SAVE_PATH)
 
     dataloader = Dataloader.DataLoader(dataset, batch_size=BATCH_SIZE,
                                        shuffle=True, num_workers=4,drop_last=True)
@@ -114,13 +117,13 @@ def train():
             if (current_prec>=history_prec):
                 history_prec=current_prec
                 print("save state, iter: %d, prec: %.2f%%"%(i,current_prec*100))
-                torch.save(net.state_dict(),"weights/densenet121_%d_%d.pth"%(i,int(history_prec*10000)))
+                torch.save(net.state_dict(),"weights/%s/densenet121_%d_%d.pth"%(SAVE_PATH, i, int(history_prec*10000)))
     current_prec = eval.eval(1000,net=net,phase="train")
     update_vis_plot(i, current_prec, prec_plot, "append")
     if (current_prec >= history_prec):
         history_prec = current_prec
         print("save state, iter: %d" % i, end=", ")
-        torch.save(net.state_dict(), "weights/densenet121_final_%d.pth"%(int(history_prec*10000)))
+        torch.save(net.state_dict(), "weights/%s/densenet121_final_%d.pth"%(SAVE_PATH, int(history_prec*10000)))
 
 
 def create_vis_plot(_xlabel, _ylabel, _title, _legend):
