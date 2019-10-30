@@ -20,7 +20,7 @@ CLASS = [
 
 
 CLASS_NUM = 62
-SAVE_PATH = "Adam3e-4_no_norm"
+SAVE_PATH = "Adam1e-3_no_norm"
 BATCH_SIZE = 128
 MAX_SIZE = 40000
 LR = 1e-3
