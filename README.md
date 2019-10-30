@@ -7,6 +7,10 @@ verfication code recognization with pytorch 0.4
 4. test.py to detect image.
 
 the best result is 91.30% on test set.  
+
+trained weight:  
+Google drive: https://drive.google.com/file/d/1rT1k7vKqj6rPbHFRnKKtdBlKsEDXukmO/view?usp=sharing  
+百度网盘：链接: https://pan.baidu.com/s/1jGQ1tM3YYyxBFpVY7zTCOQ 提取码: d3pe  
   
 loss figure: <br> 
   
