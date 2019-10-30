@@ -6,7 +6,7 @@ verfication code recognization with pytorch 0.4
 3. eval.py to eval the precision.
 4. test.py to detect image.
 
-the best result is 90.60% on test set.  
+the best result is 91.30% on test set.  
   
 loss figure: <br> 
   
